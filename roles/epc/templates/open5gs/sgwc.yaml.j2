@@ -1,0 +1,19 @@
+logger:
+  file:
+    path: /var/log/open5gs/sgwc.log
+    level: {{ epc_sgwc_logging_level | default(epc_logging_level) }}
+
+global:
+  max:
+    ue: {{ epc_max_ue }}
+
+sgwc:
+    gtpc:
+      server:
+        - address: {{ epc_sgwc_bind_addr }}
+    pfcp:
+      server:
+        - address: {{ epc_sgwc_bind_addr }}
+      client:
+        sgwu:
+          - address: {{ epc_sgwc_pfcp_client_sgwu_addr | default(epc_sgwu_bind_addr) }}

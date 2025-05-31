@@ -1,0 +1,54 @@
+---
+# Get common configuration and other element endpoints
+enb_srslte_version: 23.11
+enb_config_dir: /etc/lc/srslte
+enb_mcc: '{{ lc_mcc | default("001") }}'
+enb_mnc: '{{ lc_mnc | default("01") }}'
+enb_mme_addr: '{{ epc_mme_bind_addr | default("172.24.0.23") }}'
+
+# eNB configuration files
+enb_sib_config: '{{ enb_config_dir }}/sib.conf'
+enb_rr_config: '{{ enb_config_dir }}/rr.conf'
+enb_rb_config: '{{ enb_config_dir }}/rb.conf'
+
+# eNB configuration
+enb_id: '0x19B'
+enb_bind_addr: 172.24.0.70
+enb_s1c_bind_port: 0
+enb_tm: 1
+enb_nof_ports: 1
+
+# RF configuration
+enb_tx_gain: 66
+enb_rx_gain: 47
+enb_device_name: lime
+enb_device_args: index=0,rxant=LNAH,txant=BAND2,cal=all,refclk=10e6
+enb_time_adv_nsamples: 73
+
+# Packet capture configuration
+enb_pcap_enable: false
+enb_pcap_filename: /tmp/srsran-enb.pcap
+enb_s1ap_enable: false
+enb_s1ap_filename: /tmp/srsran-enb_s1ap.pcap
+
+enb_mac_net_enable: false
+enb_mac_bind_addr: 0.0.0.0
+enb_mac_bind_port: 5687
+enb_mac_client_addr: 127.0.0.1
+enb_mac_client_port: 5847
+
+# Log configuration
+enb_log_all_level: warning
+enb_log_all_hex_limit: 32
+enb_log_filename: /tmp/srsran-enb.log
+enb_log_file_max_size: -1
+
+enb_gui_enable: false
+
+# RR configuration
+enb_cell_id: '0x1'
+enb_tac: '0x0001'
+enb_pci: 1
+
+# External components
+epc_mme_bind_addr: 172.24.0.23

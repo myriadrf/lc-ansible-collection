@@ -1,0 +1,99 @@
+hss:  
+  transport: "{{ hss_transport }}"
+  bind_ip: ["{{ hss_diameter_bind_addr }}"]
+  bind_port: {{ hss_diameter_bind_port }}
+
+  OriginHost: "{{ hss_origin_host }}"
+  OriginRealm: "{{ hss_origin_realm }}"
+
+  ProductName: "{{ hss_product_name }}"
+  site_name: "{{ hss_site_name }}"
+
+  MCC: "{{ hss_mcc }}"
+  MNC: "{{ hss_mnc }}"
+
+  SLh_enabled: {{ hss_slh_enabled }}
+
+  test_sub_imsi: '{{ hss_test_sub_imsi }}'
+
+  client_socket_timeout: {{ hss_client_socket_timeout }}
+  diameter_request_timeout: {{ hss_diameter_request_timeout }}
+  active_diameter_peers_timeout: {{ hss_active_diameter_peers_timeout }}
+
+  lock_provisioning: {{ hss_lock_provisioning }}
+  provisioning_key: "{{ hss_provisioning_key }}"
+
+  CancelLocationRequest_Enabled: {{ hss_cancel_location_request_enabled }}
+  Insert_Subscriber_Data_Force: {{ hss_insert_subscriber_data_force }}
+
+  Default_iFC: '{{ hss_default_ifc }}'
+  Default_Sh_UserData: '{{ hss_default_sh_userdata }}'
+
+  scscf_pool:
+    - '{{ hss_default_scscf_pool }}'
+
+  roaming:
+    outbound:
+      allow_undefined_networks: {{ hss_roaming_outbound_allow_undefined_networks }}
+
+  sctp:
+    rtoMax: {{ hss_sctp_rto_max }}
+    rtoMin: {{ hss_sctp_rto_min }}
+    rtoInitial: {{ hss_sctp_rto_initial }}
+
+api:
+  page_size: {{ hss_api_page_size }}
+  enable_insecure_auc: {{ hss_api_enable_insecure_auc }}
+
+benchmarking:
+  enabled: {{ hss_benchmarking_enabled }}
+  reporting_interval: {{ hss_benchmarking_reporting_interval }}
+
+eir:
+  imsi_imei_logging: {{ hss_eir_imsi_imei_logging }}
+  no_match_response: {{ hss_eir_no_match_response }}
+
+logging:
+  level: {{ hss_logging_level }}
+  logfiles:
+    hss_logging_file: {{ hss_hss_logging_file }}
+    diameter_logging_file: {{ hss_diameter_logging_file }}
+    geored_logging_file: {{ hss_geored_logging_file }}
+    metric_logging_file: {{ hss_metric_logging_file }}
+  sqlalchemy_sql_echo: {{ hss_sqlalchemy_sql_echo }}
+  sqlalchemy_pool_recycle: {{ hss_sqlalchemy_pool_recycle }}
+  sqlalchemy_pool_size: {{ hss_sqlalchemy_pool_size }}
+  sqlalchemy_max_overflow: {{ hss_sqlalchemy_max_overflow }}
+
+database:
+  db_type: mysql
+  server: {{ hss_mysql_bind_addr }}
+  username: {{ hss_mysql_db_username }}
+  password: {{ hss_mysql_db_password }}
+  database: {{ hss_mysql_db_name }}
+
+webhooks:
+  enabled: False
+  endpoints:
+    - 'http://127.0.0.1:8181'
+
+geored:
+  enabled: False
+  sync_actions: ['HSS', 'IMS', 'PCRF', 'EIR']
+  endpoints:  
+    - 'http://hss01.mnc{{ hss_mnc_3 }}.mcc{{ hss_mnc }}.3gppnetwork.org:8080'
+    - 'http://hss02.mnc{{ hss_mnc_3 }}.mcc{{ hss_mcc }}.3gppnetwork.org:8080'
+
+redis:
+  connectionType: "{{ hss_redis_connection_type }}"
+  host: {{ hss_redis_bind_addr }}
+  port: {{ hss_redis_bind_port }}
+
+prometheus:
+  enabled: {{ hss_prometheus_enabled }}
+  port: {{ hss_prometheus_bind_port }}
+  async_subscriber_count: {{ hss_prometheus_async_subscriber_count }}
+
+snmp:
+  port: {{ hss_snmp_bind_port }}
+  listen_address: {{ hss_snmp_bind_addr }}

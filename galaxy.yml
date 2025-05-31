@@ -1,0 +1,26 @@
+---
+namespace: myriadrf
+name: librecellular
+version: 0.1.0
+readme: README.md
+authors:
+  - AB Open Ltd
+description: Collection of LibreCellular stack automation tools for Ansible.
+license:
+  - Apache-2.0
+tags: 
+  - cellularnetwork
+  - mobilenetwork
+  - lte
+  - srsran
+  - pyhss
+  - open5gs
+dependencies:
+  community.docker: ">=4.0.0"
+  community.mysql: ">=3.10.0"
+  geerlinguy.docker: ">=7.4.0"
+repository: https://github.com/myriadrf/lc-ansible
+documentation: https://librecellular.org/user/software
+homepage: https://librecellular.com
+issues: https://github.com/myriadrf/lc-ansible/issues
+build_ignore: []

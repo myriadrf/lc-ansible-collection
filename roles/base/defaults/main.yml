@@ -1,0 +1,6 @@
+---
+lc_config_dir: /etc/lc
+lc_docker_network_name: 'lc'
+lc_docker_network_subnet: '172.24.0.0/24'
+lc_docker_network_gateway: '172.24.0.254'
+

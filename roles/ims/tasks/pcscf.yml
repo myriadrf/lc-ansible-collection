@@ -1,0 +1,98 @@
+- name: Ensure P-CSCF configuration directory exists
+  ansible.builtin.file:
+    path: '{{ ims_pcscf_config_dir }}'
+    state: directory
+    mode: '0755'
+  tags: 
+    - config
+- name: Install stock P-CSCF configuration
+  ansible.builtin.copy:
+    src: 'pcscf/'
+    dest: '{{ ims_pcscf_config_dir }}'
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - config
+- name: Install generated P-CSCF configuration
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - { src: 'pcscf/pcscf.cfg.j2', dest: '{{ ims_pcscf_config_dir }}/pcscf.cfg' }
+    - { src: 'pcscf/pcscf.xml.j2', dest: '{{ ims_pcscf_config_dir }}/pcscf.xml' }
+  tags:
+    - config
+- name: Set up P-CSCF MySQL database if not present
+  block:
+  - name: Create P-CSCF MySQL database
+    community.mysql.mysql_db:
+      name: pcscf
+      state: present
+  - name: Copy SQL dumps to the target host
+    ansible.builtin.copy:
+      src: 'sql/{{ item }}'
+      dest: '/tmp/lcsql/pcscf/'
+      owner: root
+      group: root
+      mode: '0644'
+    loop: '{{ ims_pcscf_mysql_tables }}'
+  - name: Restore P-CSCF data
+    community.mysql.mysql_db:
+      name: pcscf
+      state: import
+      target: /tmp/lcsql/pcscf/{{ item }}
+    loop: '{{ ims_pcscf_mysql_tables }}'
+  when: "'pcscf' not in db_info.databases" 
+  tags:
+    - db
+- name: Create P-CSCF MySQL user if not present
+  community.mysql.mysql_user:
+    state: present
+    name: 'pcscf'
+    host: '{{ ims_pcscf_bind_addr }}'
+    plugin: caching_sha2_password
+    plugin_auth_string: '{{ ims_pcscf_mysql_password }}'
+    priv: 'pcscf.*: ALL'
+  when: db_info.users_info | selectattr('name', 'equalto', 'pcscf') | list | length == 0
+  tags:
+    - db 
+- name: Create P-CSCF container
+  community.docker.docker_container:
+    name: lc-pcscf
+    image: myriadrf/kamailio:{{ ims_kamailio_version }}
+    pull: yes
+    state: started
+    restart: yes
+    restart_policy: always
+    privileged: true
+    capabilities: 
+      - NET_ADMIN
+    sysctls:
+      net.ipv4.ip_nonlocal_bind: 1
+      net.ipv6.ip_nonlocal_bind: 1
+    env:
+      COMPONENT_NAME: pcscf-1
+    networks:
+      - name: lc
+        ipv4_address: '{{ ims_pcscf_bind_addr }}'
+    dns_servers:
+      - '{{ ims_dns_addr }}'
+    expose:
+      - "3871/udp"
+      - "3871/tcp"
+      - "5060/tcp"
+      - "5060/udp"
+      - "5100-5120/tcp"
+      - "5100-5120/udp"
+      - "6100-6120/tcp"
+      - "6100-6120/udp"
+    volumes:
+      - /etc/lc/kamailio_pcscf:/etc/lc/kamailio_pcscf:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+  tags:
+    - container

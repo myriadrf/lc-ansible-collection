@@ -1,0 +1,12 @@
+[rtpengine]
+
+table=0
+interface={{ ims_rtpengine_bind_addr }}
+listen-ng={{ ims_rtpengine_bind_addr }}:2223
+listen-cli={{ ims_rtpengine_bind_addr }}:9901
+port-min={{ ims_rtpengine_port_min }}
+port-max={{ ims_rtpengine_port_max }}
+tos={{ ims_rtpengine_tos }}
+pidfile=/run/ngcp-rtpengine-daemon.pid
+foreground=true
+

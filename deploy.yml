@@ -1,0 +1,16 @@
+- hosts: lcran
+  become: true
+  vars:
+    lc_mcc: '001'
+    lc_mnc: '01'
+    enb_earfcn: '1934'
+    enb_nprb: '15'
+    hss_mysql_root_password: 'rootpasswd'
+    hss_mysql_db_password: 'pyhsspasswd'
+    ims_mysql_password: 'imspasswd'
+    hss_provisioning_key: 'changeThisKeyInProduction'
+    hss_lock_provisioning: False
+  roles:
+    - hss
+    - epc
+    - ims

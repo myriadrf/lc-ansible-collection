@@ -1,0 +1,37 @@
+---
+- block:
+  - name: Ensure Open5GS configuration directories exists
+    ansible.builtin.file:
+      path: '{{ item }}'
+      state: directory
+      mode: '0755'
+    loop:
+      - '{{ epc_open5gs_config_dir }}'
+      - '{{ epc_open5gs_tls_dir }}'
+      - '{{ epc_freediameter_config_dir }}'
+    tags: 
+      - config
+  - name: Copy across stock TLS CA cert (TLS auth is disabled, but still required)
+    ansible.builtin.copy:
+      src: 'tls/ca.crt'
+      dest: '{{ epc_open5gs_tls_dir }}/ca.crt'
+      owner: root
+      group: root
+      mode: '0644'
+  - name: Set up SMF
+    include_tasks: smf.yml
+    when: epc_components is undefined or 'smf' in epc_components
+  - name: Set up UPF
+    include_tasks: upf.yml
+    when: epc_components is undefined or 'upf' in epc_components
+  - name: Set up SGW-C
+    include_tasks: sgwc.yml
+    when: epc_components is undefined or 'sgwc' in epc_components
+  - name: Set up SGW-U
+    include_tasks: sgwu.yml
+    when: epc_components is undefined or 'sgwu' in epc_components
+  - name: Set up MME
+    include_tasks: mme.yml
+    when: epc_components is undefined or 'mme' in epc_components
+  vars:
+    epc_mnc_3: "{{ epc_mnc | regex_replace('^(.{2})$', '0\\1') }}"

@@ -1,0 +1,60 @@
+logger:
+  file:
+    path: /var/log/open5gs/smf.log
+    level: {{ epc_smf_logging_level | default(epc_logging_level) }}
+
+sbi:
+    server:
+      no_tls: true
+    client:
+      no_tls: true
+
+global:
+  max:
+    ue: {{ epc_max_ue }}
+  parameter:
+      no_ipv4v6_local_addr_in_packet_filter: {{ epc_smf_no_ipv4v6_local_addr_in_packet_filter }}
+
+smf:
+    freeDiameter: {{ epc_freediameter_config_dir }}/smf.conf
+    gtpc:
+      server:
+        - address: {{ epc_smf_gtpc_server_bind_addr | default(epc_smf_bind_addr) }}
+    gtpu:
+      server:
+        - address: {{ epc_smf_gtpu_server_bind_addr | default(epc_smf_bind_addr) }}
+    pfcp:
+      server:
+        - address: {{ epc_smf_pfcp_server_bind_addr | default(epc_smf_bind_addr) }}
+      client:
+        upf:
+          - address: {{ epc_smf_upf_client_addr | default(epc_upf_bind_addr) }}
+    session:
+      - subnet: {{ epc_pdn_internet_ipv4_subnet }}
+        gateway: {{ epc_pdn_internet_ipv4_gateway }}
+        dnn: internet
+        dev: ogstun
+      - subnet: {{ epc_pdn_internet_ipv6_subnet }}
+        gateway: {{ epc_pdn_internet_ipv6_gateway }}
+        dnn: internet
+        dev: ogstun
+      - subnet: {{ epc_pdn_ims_ipv4_subnet }}
+        gateway: {{ epc_pdn_ims_ipv4_gateway }}
+        dnn: ims
+        dev: ogstun2
+      - subnet: {{ epc_pdn_ims_ipv6_subnet }}
+        gateway: {{ epc_pdn_ims_ipv6_gateway }}
+        dnn: ims
+        dev: ogstun2
+    dns:
+      - {{ epc_pdn_dns_forwarder_ipv4_primary }}
+      - {{ epc_pdn_dns_forwarder_ipv4_secondary }}
+      - {{ epc_pdn_dns_forwarder_ipv6_primary }}
+      - {{ epc_pdn_dns_forwarder_ipv6_secondary }}
+    p-cscf:
+      - {{ epc_smf_pcscf_addr }}
+    mtu: {{ epc_smf_mtu}}
+    metrics:
+      server:
+        - address: {{ epc_smf_metrics_server_bind_addr | default(epc_smf_bind_addr) }}
+          port: {{ epc_smf_metrics_server_bind_port }}

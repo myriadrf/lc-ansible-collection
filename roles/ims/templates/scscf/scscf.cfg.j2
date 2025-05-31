@@ -1,0 +1,33 @@
+listen=udp:{{ ims_scscf_bind_addr }}:6060
+listen=tcp:{{ ims_scscf_bind_addr }}:6060
+
+alias=scscf.ims.mnc{{ ims_mnc_3 }}.mcc{{ ims_mcc }}.3gppnetwork.org
+
+#!define NETWORKNAME "ims.mnc{{ ims_mnc_3 }}.mcc{{ ims_mcc }}.3gppnetwork.org"
+#!define EPC_REALM "epc.mnc{{ ims_mnc_3 }}.mcc{{ ims_mcc }}.3gppnetwork.org"
+#!define NETWORKNAME_ESC "ims\.mnc{{ ims_mnc_3 }}\.mcc{{ ims_mcc }}\.3gppnetwork\.org"
+#!define HOSTNAME "scscf.ims.mnc{{ ims_mnc_3 }}.mcc{{ ims_mcc }}.3gppnetwork.org"
+#!define HOSTNAME_ESC "scscf\.ims\.mnc{{ ims_mnc_3 }}\.mcc{{ ims_mcc }}\.3gppnetwork\.org"
+#!define URI "sip:scscf.ims.mnc{{ ims_mnc_3 }}.mcc{{ ims_mcc }}.3gppnetwork.org:6060"
+#!subst "/NETWORKNAME/ims.mnc{{ ims_mnc_3 }}.mcc{{ ims_mcc }}.3gppnetwork.org/"
+#!define ENUM_SUFFIX "ims.mnc{{ ims_mnc_3 }}.mcc{{ ims_mcc }}.3gppnetwork.org."
+#!define DB_URL "mysql://{{ ims_scscf_mysql_username }}:{{ ims_scscf_mysql_password }}@{{ ims_mysql_addr }}/{{ ims_scscf_mysql_db_name }}"
+#!define REG_AUTH_DEFAULT_ALG "HSS-Selected"
+
+#!define TCP_PROCESSES 3
+
+#!define RO_DESTINATION "hssocs.voiceblue.com"
+#!define RO_ROOT "32260@3gpp.org"
+#!define RO_EXT "ext"
+#!define RO_MNC "02"
+#!define RO_MCC "001"
+#(see https://en.wikipedia.org/wiki/Mobile_country_code_(MCC))
+#!define RO_RELEASE "8"
+# See http://tools.ietf.org/html/rfc4006#section-4.1.2 for the definition of the Service-Context
+
+#!define WITH_TCP
+#!define WITH_AUTH
+
+{% if ims_scscf_debug is defined and ims_scscf_debug | bool %}
+#!define WITH_DEBUG
+{% endif %}

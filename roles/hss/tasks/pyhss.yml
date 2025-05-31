@@ -1,0 +1,74 @@
+---
+- name: Ensure pyHSS configuration directory exists
+  ansible.builtin.file:
+    path: '{{ hss_config_dir }}'
+    state: directory
+    mode: '0755'
+  tags: 
+    - config
+- name: Copy across stock pyHSS configuration files
+  ansible.builtin.copy:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - { src: 'pyhss/default_ifc.xml', dest: '{{ hss_config_dir }}' }
+    - { src: 'pyhss/default_sh_user_data.xml', dest: '{{ hss_config_dir }}' }
+  tags:
+    - config
+- name: Install generated PyHSS configuration
+  ansible.builtin.template:
+    src: 'pyhss/config.yaml.j2'
+    dest: '{{ hss_config_dir }}/config.yaml'
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - config
+- name: Create PyHSS base container
+  community.docker.docker_container:
+    name: lc-hss-base
+    image: myriadrf/pyhss:{{ hss_version }}
+    pull: yes
+    state: started
+    restart: yes
+    restart_policy: always
+    env:
+      COMPONENT_NAME: base
+    networks:
+      - name: lc
+        ipv4_address: '{{ hss_diameter_bind_addr }}'
+    dns_servers:
+      - '{{ hss_dns_bind_addr }}'
+    expose:
+      - '3868/tcp'
+    volumes:
+      - /etc/lc/pyhss:/mnt/pyhss:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+  tags:
+    - container
+- name: Create PyHSS API container
+  community.docker.docker_container:
+    name: lc-hss-api
+    image: myriadrf/pyhss:{{ hss_version }}
+    pull: yes
+    state: started
+    restart: yes
+    restart_policy: always
+    env:
+      PYHSS_IP: '{{ hss_api_bind_addr }}'
+      COMPONENT_NAME: api
+    networks:
+      - name: lc
+        ipv4_address: '{{ hss_api_bind_addr }}'
+    ports:
+      - '{{ hss_api_bind_port }}:8080/tcp'
+    volumes:
+      - /etc/lc/pyhss:/mnt/pyhss:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+  tags:
+    - container

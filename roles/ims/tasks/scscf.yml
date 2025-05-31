@@ -1,0 +1,88 @@
+- name: Ensure S-CSCF configuration directory exists
+  ansible.builtin.file:
+    path: '{{ ims_scscf_config_dir }}'
+    state: directory
+    mode: '0755'
+  tags: 
+    - config
+- name: Install stock S-CSCF configuration
+  ansible.builtin.copy:
+    src: 'scscf/'
+    dest: '{{ ims_scscf_config_dir }}'
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - config
+- name: Install generated S-CSCF configuration
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - { src: 'scscf/scscf.cfg.j2', dest: '{{ ims_scscf_config_dir }}/scscf.cfg' }
+    - { src: 'scscf/scscf.xml.j2', dest: '{{ ims_scscf_config_dir }}/scscf.xml' }
+  tags:
+    - config
+- name: Set up S-CSCF MySQL database if not present
+  block:
+  - name: Create S-CSCF database
+    community.mysql.mysql_db:
+      name: scscf
+      state: present
+  - name: Copy SQL dumps to the target host
+    ansible.builtin.copy:
+      src: 'sql/{{ item }}'
+      dest: '/tmp/lcsql/scscf/'
+      owner: root
+      group: root
+      mode: '0644'
+    loop: '{{ ims_scscf_mysql_tables }}'
+  - name: Restore S-CSCF data
+    community.mysql.mysql_db:
+      name: scscf
+      state: import
+      target: /tmp/lcsql/scscf/{{ item }}
+    loop: '{{ ims_scscf_mysql_tables }}'
+  when: "'scscf' not in db_info.databases" 
+  tags:
+    - db
+- name: Create S-CSCF MySQL user if not present
+  community.mysql.mysql_user:
+    state: present
+    name: 'scscf'
+    host: '{{ ims_scscf_bind_addr }}'
+    plugin: caching_sha2_password
+    plugin_auth_string: '{{ ims_scscf_mysql_password }}'
+    priv: 'scscf.*: ALL'
+  when: db_info.users_info | selectattr('name', 'equalto', 'scscf') | list | length == 0
+  tags:
+    - db 
+- name: Create S-CSCF container
+  community.docker.docker_container:
+    name: lc-scscf
+    image: myriadrf/kamailio:{{ ims_kamailio_version }}
+    pull: yes
+    state: started
+    restart: yes
+    restart_policy: always
+    env:
+      COMPONENT_NAME: scscf-1
+    networks:
+      - name: lc
+        ipv4_address: '{{ ims_scscf_bind_addr }}'
+    dns_servers:
+      - '{{ ims_dns_addr }}'
+    expose:
+      - "3870/udp"
+      - "3870/tcp"
+      - "6060/udp"
+      - "6060/tcp"
+    volumes:
+      - /etc/lc/kamailio_scscf:/etc/lc/kamailio_scscf:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+  tags:
+    - container

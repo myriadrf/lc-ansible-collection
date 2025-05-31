@@ -1,0 +1,45 @@
+---
+- name: Copy across stock TLS cert (TLS auth is disabled, but still required)
+  ansible.builtin.copy:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - { src: 'tls/mme.crt', dest: '{{ epc_open5gs_tls_dir }}/mme.crt' }
+    - { src: 'tls/mme.key', dest: '{{ epc_open5gs_tls_dir }}/mme.key' }
+  tags:
+    - config
+- name: Install generated MME configuration
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - { src: 'open5gs/mme.yaml.j2', dest: '{{ epc_open5gs_config_dir }}/mme.yaml' }
+    - { src: 'freeDiameter/mme.conf.j2', dest: '{{ epc_freediameter_config_dir }}/mme.conf' }
+  tags:
+    - config
+- name: Create Open5GS MME container
+  community.docker.docker_container:
+    name: lc-mme
+    image: myriadrf/open5gs:{{ epc_open5gs_version }}
+    pull: yes
+    state: started
+    restart: yes
+    restart_policy: always
+    env:
+      COMPONENT_NAME: mme-1
+    networks:
+      - name: lc
+        ipv4_address: '{{ epc_mme_bind_addr }}'
+    volumes:
+      - /etc/lc/open5gs:/etc/lc/open5gs:ro
+      - /etc/lc/freeDiameter:/etc/lc/freeDiameter:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+  tags:
+    - container

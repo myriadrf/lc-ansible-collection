@@ -1,0 +1,40 @@
+---
+- name: Ensure DNS configuration directory exists
+  ansible.builtin.file:
+    path: '{{ hss_dns_config_dir }}'
+    state: directory
+    mode: '0755'
+  tags: 
+    - config
+- name: Install generated DNS configuration
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - { src: 'bind/e164.arpa.j2', dest: '{{ hss_dns_config_dir }}/e164.arpa' }
+    - { src: 'bind/epc_zone.j2', dest: '{{ hss_dns_config_dir }}/epc_zone' }
+    - { src: 'bind/ims_zone.j2', dest: '{{ hss_dns_config_dir }}/ims_zone' }
+    - { src: 'bind/named.conf.j2', dest: '{{ hss_dns_config_dir }}/named.conf' }
+    - { src: 'bind/pub_3gpp_zone.j2', dest: '{{ hss_dns_config_dir }}/pub_3gpp_zone' }
+  tags:
+    - config
+- name: Create BIND container
+  community.docker.docker_container:
+    name: lc-dns
+    image: ubuntu/bind9:{{ hss_dns_bind_version }}
+    pull: yes
+    state: started
+    restart: yes
+    restart_policy: always
+    networks:
+      - name: lc
+        ipv4_address: '{{ hss_dns_bind_addr }}'
+    volumes:
+      - /etc/lc/bind:/etc/bind:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+  tags:
+    - container

@@ -1,0 +1,42 @@
+##############################################################
+##  Peer identity and realm 
+
+Identity = "mme.epc.mnc{{ epc_mnc_3 }}.mcc{{ epc_mcc }}.3gppnetwork.org";
+Realm = "epc.mnc{{ epc_mnc_3}}.mcc{{ epc_mcc }}.3gppnetwork.org";
+
+##############################################################
+##  Endpoint configuration
+
+ListenOn = "{{ epc_mme_bind_addr }}";
+TLS_Cred = "{{ epc_open5gs_tls_dir }}/mme.crt", "{{ epc_open5gs_tls_dir }}/mme.key";
+TLS_CA = "{{ epc_open5gs_tls_dir }}/ca.crt";
+
+##############################################################
+##  Applications configuration
+
+# Disable the relaying of Diameter messages?
+# For messages not handled locally, the default behavior is to forward the
+# message to another peer if any is available, according to the routing 
+# algorithms. In addition the "0xffffff" application is advertised in CER/CEA 
+# exchanges.
+# Default: Relaying is enabled.
+
+NoRelay;
+
+##############################################################
+##  Extensions configuration
+
+LoadExtension = "/usr/lib/x86_64-linux-gnu/freeDiameter/dbg_msg_dumps.fdx" : "0x8888";
+LoadExtension = "/usr/lib/x86_64-linux-gnu/freeDiameter/dict_rfc5777.fdx";
+LoadExtension = "/usr/lib/x86_64-linux-gnu/freeDiameter/dict_mip6i.fdx";
+LoadExtension = "/usr/lib/x86_64-linux-gnu/freeDiameter/dict_nasreq.fdx";
+LoadExtension = "/usr/lib/x86_64-linux-gnu/freeDiameter/dict_nas_mipv6.fdx";
+LoadExtension = "/usr/lib/x86_64-linux-gnu/freeDiameter/dict_dcca.fdx";
+LoadExtension = "/usr/lib/x86_64-linux-gnu/freeDiameter/dict_dcca_3gpp.fdx";
+
+##############################################################
+##  Peers configuration
+
+ConnectPeer = "hss.epc.mnc{{ epc_mnc_3 }}.mcc{{ epc_mcc }}.3gppnetwork.org" { ConnectTo = "{{ epc_hss_addr }}"; No_TLS; };
+
+##############################################################

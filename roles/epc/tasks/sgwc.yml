@@ -1,0 +1,32 @@
+---
+- name: Install generated SGW-C configuration
+  ansible.builtin.template:
+    src: 'open5gs/sgwc.yaml.j2'
+    dest: '{{ epc_open5gs_config_dir }}/sgwc.yaml'
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - config
+- name: Create Open5GS SGW-C container
+  community.docker.docker_container:
+    name: lc-sgwc
+    image: myriadrf/open5gs:{{ epc_open5gs_version }}
+    pull: yes
+    state: started
+    restart: yes
+    restart_policy: always
+    env:
+      COMPONENT_NAME: sgwc-1
+    networks:
+      - name: lc
+        ipv4_address: '{{ epc_sgwc_bind_addr }}'
+    volumes:
+      - /etc/lc/open5gs:/etc/lc/open5gs:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    expose:
+      - '2123/udp'
+      - '8805/udp'
+  tags:
+    - container

@@ -1,0 +1,32 @@
+---
+- name: Install generated SGW-U configuration
+  ansible.builtin.template:
+    src: 'open5gs/sgwu.yaml.j2'
+    dest: '{{ epc_open5gs_config_dir }}/sgwu.yaml'
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - config
+- name: Create Open5GS SGW-U container
+  community.docker.docker_container:
+    name: lc-sgwu
+    image: myriadrf/open5gs:{{ epc_open5gs_version }}
+    pull: yes
+    state: started
+    restart: yes
+    restart_policy: always
+    env:
+      COMPONENT_NAME: sgwu-1
+    networks:
+      - name: lc
+        ipv4_address: '{{ epc_sgwu_bind_addr }}'
+    volumes:
+      - /etc/lc/open5gs:/etc/lc/open5gs:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    expose:
+      - '8805/udp'
+      - '2152/udp'
+  tags:
+    - container

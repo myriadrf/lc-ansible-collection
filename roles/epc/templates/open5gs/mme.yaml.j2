@@ -1,0 +1,47 @@
+logger:
+  file:
+    path: /var/log/open5gs/mme.log
+    level: {{ epc_mme_logging_level | default(epc_logging_level) }}
+
+global:
+  max:
+    ue: {{ epc_max_ue }}
+
+mme:
+    freeDiameter: {{ epc_freediameter_config_dir }}/mme.conf
+    s1ap:
+      server:
+        - address: {{ epc_mme_bind_addr }}
+    gtpc:
+      server:
+        - address: {{ epc_mme_bind_addr }}
+      client:
+        sgwc:
+          - address: {{ epc_mme_gtpc_client_sgwc_addr | default(epc_sgwc_bind_addr) }}
+        smf:
+          - address: {{ epc_mme_gtpc_client_smf_addr | default(epc_smf_bind_addr) }}
+    gummei: 
+      - plmn_id:
+          mcc: {{ epc_mme_gummei_mcc | default(epc_mcc) }}
+          mnc: {{ epc_mme_gummei_mnc | default(epc_mnc) }}
+        mme_gid: {{ epc_mme_gummei_gid }}
+        mme_code: {{ epc_mme_gummei_code }}
+    tai:
+      - plmn_id:
+          mcc: {{ epc_mme_tai_mcc | default(epc_mcc) }}
+          mnc: {{ epc_mme_tai_mnc | default(epc_mnc) }}
+        tac: {{ epc_mme_tai_tac }}
+    security:
+        integrity_order : [ {{ epc_mme_integrity_integrity_order }} ]
+        ciphering_order : [ {{ epc_mme_integrity_ciphering_order }} ]
+    network_name:
+        full: {{ epc_network_name_full }}
+        short: {{ epc_network_name_short }}
+    mme_name: {{ epc_mme_name }}
+    metrics:
+      server:
+        - address: {{ epc_mme_metrics_server_bind_addr | default(epc_mme_bind_addr) }}
+          port: {{ epc_mme_metrics_server_bind_port }}
+    time:
+      t3412:
+        value: {{ epc_mme_time_t3412_value }}

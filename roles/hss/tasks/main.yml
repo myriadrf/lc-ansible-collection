@@ -1,0 +1,16 @@
+---
+- block:
+  - name: Set up BIND
+    include_tasks: bind.yml
+    when: hss_components is undefined or 'bind' in hss_components
+  - name: Set up MySQL
+    include_tasks: mysql.yml
+    when: hss_components is undefined or 'mysql' in hss_components
+  - name: Set up Redis
+    include_tasks: redis.yml
+    when: hss_components is undefined or 'redis' in hss_components
+  - name: Set up pyHSS
+    include_tasks: pyhss.yml
+    when: hss_components is undefined or 'pyhss' in hss_components
+  vars:
+    hss_mnc_3: "{{ hss_mnc | regex_replace('^(.{2})$', '0\\1') }}"

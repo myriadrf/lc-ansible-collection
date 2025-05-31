@@ -1,0 +1,50 @@
+---
+- name: Ensure configuration directory exists
+  ansible.builtin.file:
+    path: '{{ enb_config_dir }}'
+    state: directory
+    mode: '0755'
+  tags:
+    - config 
+- name: Install srsRAN configuration files
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - { src: 'enb.conf.j2', dest: '{{ enb_config_dir }}/enb.conf' }
+    - { src: 'sib.conf.j2', dest: '{{ enb_config_dir }}/sib.conf' }
+    - { src: 'rr.conf.j2', dest: '{{ enb_config_dir }}/rr.conf' }
+    - { src: 'rb.conf.j2', dest: '{{ enb_config_dir }}/rb.conf' }
+  tags:
+    - config
+- name: Create srsenb container
+  community.docker.docker_container:
+    name: lc-enb
+    image: myriadrf/srslte:{{ enb_srslte_version }}
+    pull: yes
+    state: started
+    restart: yes
+    restart_policy: always
+    tty: true
+    interactive: true
+    privileged: true
+    env:
+      COMPONENT_NAME: enb
+    networks:
+      - name: lc
+        ipv4_address: '{{ enb_bind_addr }}'
+    expose:
+      - '36412/sctp'
+      - '2152/udp'
+    devices:
+      - /dev/bus:/dev/bus
+    volumes:
+      - /etc/lc/srslte:/etc/lc/srslte:ro
+      - /dev/bus/usb:/dev/bus/usb:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+  tags:
+    - container

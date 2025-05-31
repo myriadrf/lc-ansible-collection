@@ -1,0 +1,61 @@
+#####################################################################
+#                   srsENB configuration file
+#####################################################################
+
+# eNB configuration
+
+[enb]
+enb_id = {{ enb_id }}
+mcc = {{ enb_mcc }}
+mnc = {{ enb_mnc }}
+mme_addr = {{ enb_mme_addr }}
+gtp_bind_addr = {{ enb_bind_addr }}
+gtp_advertise_addr = {{ enb_bind_addr }}
+s1c_bind_addr = {{ enb_bind_addr }}
+s1c_bind_port = {{ enb_s1c_bind_port }}
+n_prb = {{ enb_n_prb }}
+tm = {{ enb_tm }}
+nof_ports = {{ enb_nof_ports }}
+
+# eNB configuration files
+
+[enb_files]
+sib_config = {{ enb_sib_config }}
+rr_config = {{ enb_rr_config }}
+rb_config = {{ enb_rb_config }}
+
+# RF configuration
+
+[rf]
+dl_earfcn = {{ enb_earfcn }}
+tx_gain = {{ enb_tx_gain }}
+rx_gain = {{ enb_rx_gain }}
+device_name = {{ enb_device_name }}
+device_args = {{ enb_device_args }}
+time_adv_nsamples = {{ enb_time_adv_nsamples }}
+
+# Packet capture configuration
+
+[pcap]
+enable = {{ enb_pcap_enable }}
+filename = {{ enb_pcap_filename }}
+s1ap_enable = {{ enb_s1ap_enable }}
+s1ap_filename = {{ enb_s1ap_filename }}
+
+mac_net_enable = {{ enb_mac_net_enable }}
+bind_ip = {{ enb_mac_bind_addr }}
+bind_port = {{ enb_mac_bind_port }}
+client_ip = {{ enb_mac_client_addr }}
+client_port = {{ enb_mac_client_port }}
+
+# Log configuration
+
+[log]
+all_level = {{ enb_log_all_level }}
+all_hex_limit = {{ enb_log_all_hex_limit }}
+filename = {{ enb_log_filename }}
+file_max_size = {{ enb_log_file_max_size }}
+
+[gui]
+enable = {{ enb_gui_enable }}
+

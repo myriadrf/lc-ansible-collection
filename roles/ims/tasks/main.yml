@@ -1,0 +1,32 @@
+---
+- block:
+  - name: Get details of existing MySQL databases and users
+    community.mysql.mysql_info:
+    register: db_info
+    tags: always
+  - name: Set up Rtpengine
+    ansible.builtin.import_tasks: rtpengine.yml
+    when: ims_components is undefined or 'rtpengine' in ims_components
+  - name: Set up I-CSCF
+    ansible.builtin.import_tasks: icscf.yml
+    when: ims_components is undefined or 'icscf' in ims_components
+  - name: Set up S-CSCF
+    ansible.builtin.import_tasks: scscf.yml
+    when: ims_components is undefined or 'scscf' in ims_components
+  - name: Set up P-CSCF
+    ansible.builtin.import_tasks: pcscf.yml
+    when: ims_components is undefined or 'pcscf' in ims_components
+  - name: Set up SMSC
+    ansible.builtin.import_tasks: smsc.yml
+    when: ims_components is undefined or 'smsc' in ims_components
+  module_defaults:
+    community.mysql.mysql_db: &mysql_defaults
+      login_host: 127.0.0.1
+      login_user: root
+      login_password: '{{ ims_mysql_root_password }}'
+    community.mysql.mysql_info: *mysql_defaults
+    community.mysql.mysql_query: *mysql_defaults
+    community.mysql.mysql_user: *mysql_defaults
+  vars:
+    ims_mnc_3: "{{ ims_mnc | regex_replace('^(.{2})$', '0\\1') }}"
+    ims_domain: "ims.mnc{{ ims_mnc_3 }}.mcc{{ ims_mcc }}.3gppnetwork.org"

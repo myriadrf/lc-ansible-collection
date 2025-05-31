@@ -1,0 +1,19 @@
+listen=udp:{{ ims_smsc_bind_addr }}:7090
+listen=tcp:{{ ims_smsc_bind_addr }}:7090
+
+#!define DOMAIN "ims.mnc{{ ims_mnc_3 }}.mcc{{ ims_mcc }}.3gppnetwork.org"
+#!subst "/DOMAIN/ims.mnc{{ ims_mnc_3 }}.mcc{{ ims_mcc }}.3gppnetwork.org/"
+#!define SMSC_SERVER "smsc.ims.mnc{{ ims_mnc_3 }}.mcc{{ ims_mcc }}.3gppnetwork.org"
+#!subst "/SMSC_SERVER/smsc.ims.mnc{{ ims_mnc_3 }}.mcc{{ ims_mcc }}.3gppnetwork.org/"
+
+# Connection URL for the database:
+#!define SMS_DB_URL "sms=>mysql://{{ ims_smsc_mysql_username }}:{{ ims_smsc_mysql_password }}@{{ ims_mysql_addr }}/{{ ims_smsc_mysql_db_name }}"
+#!define DIALPLAN_PUA_DB_URL "mysql://{{ ims_smsc_mysql_username }}:{{ ims_smsc_mysql_password }}@{{ ims_mysql_addr }}/{{ ims_smsc_mysql_db_name }}"
+
+#!subst "/NEXMO_APIKEY/abcdef/"
+#!subst "/NEXMO_APISECRET/xyz/"
+#!subst "/SUBSCRIBE_EXPIRE/7200/"
+
+{% if ims_smsc_debug is defined and ims_smsc_debug | bool %}
+#!define WITH_DEBUG
+{% endif %}

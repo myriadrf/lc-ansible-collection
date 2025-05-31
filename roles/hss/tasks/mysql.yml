@@ -1,0 +1,26 @@
+---
+- name: Create MySQL container
+  community.docker.docker_container:
+    name: lc-mysql
+    image: mysql:{{ hss_mysql_version }}
+    command: 'mysqld --max-connections={{ hss_mysql_max_connections }}'
+    pull: yes
+    state: started
+    restart: yes
+    restart_policy: always
+    env:
+      MYSQL_ROOT_PASSWORD: '{{ hss_mysql_root_password }}'
+      MYSQL_ROOT_HOST: '{{ hss_mysql_root_host }}'
+      MYSQL_DATABASE: '{{ hss_mysql_db_name }}'
+      MYSQL_USER: '{{ hss_mysql_db_username }}'
+      MYSQL_PASSWORD: '{{ hss_mysql_db_password }}'
+    networks:
+      - name: lc
+        ipv4_address: '{{ hss_mysql_bind_addr }}'
+    volumes:
+      - '{{ hss_mysql_docker_volume }}:/var/lib/mysql'
+    ports:
+    - '127.0.0.1:3306:3306'
+  tags:
+    - container
+

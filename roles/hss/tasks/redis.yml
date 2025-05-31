@@ -1,0 +1,14 @@
+---
+- name: Create Redis container
+  community.docker.docker_container:
+    name: lc-redis
+    image: 'redis:{{ hss_redis_version }}'
+    pull: yes
+    state: started
+    restart: yes
+    restart_policy: always
+    networks:
+      - name: lc
+        ipv4_address: '{{ hss_redis_bind_addr }}'
+  tags:
+    - container

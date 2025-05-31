@@ -1,0 +1,66 @@
+---
+# Get/set common configuration and other element endpoints
+ims_kamailio_version: 5.8.3
+ims_dns_addr: '{{ hss_dns_bind_addr | default("172.24.0.10") }}'
+ims_mysql_addr: '{{ hss_mysql_bind_addr | default("172.24.0.11") }}'
+ims_mysql_root_password: '{{ hss_mysql_root_password }}'
+ims_debug: False
+ims_mcc: '{{ lc_mcc | default("001") }}'
+ims_mnc: '{{ lc_mnc | default("01") }}'
+
+# Rtpengine configuration
+ims_rtpengine_version: mr9.4.1
+ims_rtpengine_config_dir: /etc/lc/rtpengine
+ims_rtpengine_bind_addr: 172.24.0.50
+ims_rtpengine_port_min: 49000
+ims_rtpengine_port_max: 50000
+ims_rtpengine_tos: 184
+
+# I-CSCF configuration
+ims_icscf_config_dir: /etc/lc/kamailio_icscf
+ims_icscf_bind_addr: 172.24.0.51
+ims_icscf_mysql_db_name: icscf
+ims_icscf_mysql_username: icscf
+ims_icscf_mysql_password: '{{ ims_mysql_password }}'
+ims_icscf_debug: '{{ ims_debug }}'
+
+# S-CSCF configuration
+ims_scscf_config_dir: /etc/lc/kamailio_scscf
+ims_scscf_bind_addr: 172.24.0.52
+ims_scscf_mysql_db_name: scscf
+ims_scscf_mysql_username: scscf
+ims_scscf_mysql_password: '{{ ims_mysql_password }}'
+ims_scscf_mysql_tables: 
+  - standard-create.sql
+  - presence-create.sql
+  - ims_usrloc_scscf-create.sql
+  - ims_dialog-create.sql
+  - ims_charging-create.sql
+ims_scscf_debug: '{{ ims_debug }}'
+
+# P-CSCF configuration
+ims_pcscf_config_dir: /etc/lc/kamailio_pcscf
+ims_pcscf_bind_addr: 172.24.0.53
+ims_pcscf_mysql_db_name: pcscf
+ims_pcscf_mysql_username: pcscf
+ims_pcscf_mysql_password: '{{ ims_mysql_password }}'
+ims_pcscf_mysql_tables: 
+  - standard-create.sql
+  - presence-create.sql
+  - ims_usrloc_pcscf-create.sql
+  - ims_dialog-create.sql
+ims_pcscf_scp_addr: '{{ ngc_scp_bind_addr | default("172.24.0.32") }}'
+ims_pcscf_debug: '{{ ims_debug }}'
+
+# SMSC configuration
+ims_smsc_config_dir: /etc/lc/kamailio_smsc
+ims_smsc_bind_addr: 172.24.0.54
+ims_smsc_mysql_db_name: smsc
+ims_smsc_mysql_username: smsc
+ims_smsc_mysql_password: '{{ ims_mysql_password }}'
+ims_smsc_mysql_tables: 
+  - standard-create.sql
+  - smsc-create.sql
+  - dialplan-create.sql
+  - presence-create.sql
+ims_smsc_debug: '{{ ims_debug }}'

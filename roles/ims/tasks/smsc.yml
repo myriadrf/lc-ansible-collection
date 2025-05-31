@@ -1,0 +1,83 @@
+- name: Ensure SMSC configuration directory exists
+  ansible.builtin.file:
+    path: '{{ ims_smsc_config_dir }}'
+    state: directory
+    mode: '0755'
+  tags: 
+    - config
+- name: Install stock SMSC configuration
+  ansible.builtin.copy:
+    src: 'smsc/'
+    dest: '{{ ims_smsc_config_dir }}'
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - config
+- name: Install generated SMSC configuration
+  ansible.builtin.template:
+    src: 'smsc/smsc.cfg.j2'
+    dest: '{{ ims_smsc_config_dir }}/smsc.cfg'
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - config
+- name: Set up SMSC MySQL database if not present
+  block:
+    - name: Create SMSC MySQL database
+      community.mysql.mysql_db:
+        name: smsc
+        state: present
+    - name: Copy SQL dumps to the target host
+      ansible.builtin.copy:
+        src: 'sql/{{ item }}'
+        dest: '/tmp/lcsql/smsc/'
+        owner: root
+        group: root
+        mode: '0644'
+      loop: '{{ ims_smsc_mysql_tables }}'
+    - name: Restore SMSC data
+      community.mysql.mysql_db:
+        name: smsc
+        state: import
+        target: /tmp/lcsql/smsc/{{ item }}
+      loop: '{{ ims_smsc_mysql_tables }}'
+  when: "'smsc' not in db_info.databases"
+  tags:
+    - db
+- name: Create SMSC MySQL user if not present
+  community.mysql.mysql_user:
+    state: present
+    name: 'smsc'
+    host: '{{ ims_smsc_bind_addr }}'
+    plugin: caching_sha2_password
+    plugin_auth_string: '{{ ims_smsc_mysql_password }}'
+    priv: 'smsc.*: ALL'
+  when: db_info.users_info | selectattr('name', 'equalto', 'smsc') | list | length == 0
+  tags:
+    - db 
+- name: Create SMSC container
+  community.docker.docker_container:
+    name: lc-smsc
+    image: myriadrf/kamailio:{{ ims_kamailio_version }}
+    pull: yes
+    state: started
+    restart: yes
+    restart_policy: always
+    env:
+      COMPONENT_NAME: smsc-1
+    networks:
+      - name: lc
+        ipv4_address: '{{ ims_smsc_bind_addr }}'
+    dns_servers:
+      - '{{ ims_dns_addr }}'
+    expose:
+      - "7090/udp"
+      - "7090/tcp"
+    volumes:
+      - /etc/lc/kamailio_smsc:/etc/lc/kamailio_smsc:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+  tags:
+    - container

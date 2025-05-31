@@ -1,0 +1,56 @@
+---
+- name: Copy across stock TLS cert (TLS auth is disabled, but still required)
+  ansible.builtin.copy:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - { src: 'tls/smf.crt', dest: '{{ epc_open5gs_tls_dir }}/smf.crt' }
+    - { src: 'tls/smf.key', dest: '{{ epc_open5gs_tls_dir }}/smf.key' }
+  tags:
+    - config
+- name: Install generated SMF configuration
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - { src: 'open5gs/smf.yaml.j2', dest: '{{ epc_open5gs_config_dir }}/smf.yaml' }
+    - { src: 'freeDiameter/smf.conf.j2', dest: '{{ epc_freediameter_config_dir }}/smf.conf' }
+  tags:
+    - config
+- name: Create Open5GS SMF container
+  community.docker.docker_container:
+    name: lc-smf
+    image: myriadrf/open5gs:{{ epc_open5gs_version }}
+    pull: yes
+    state: started
+    restart: yes
+    restart_policy: always
+    env:
+      COMPONENT_NAME: smf-1
+    networks:
+      - name: lc
+        ipv4_address: '{{ epc_smf_bind_addr }}'
+    volumes:
+      - /etc/lc/open5gs:/etc/lc/open5gs:ro
+      - /etc/lc/freeDiameter:/etc/lc/freeDiameter:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    expose:
+      - '3868/udp'
+      - '3868/tcp'
+      - '3868/sctp'
+      - '5868/udp'
+      - '5868/tcp'
+      - '5868/sctp'
+      - '8805/udp'
+      - '2123/udp'
+      - '7777/tcp'
+      - '9091/tcp'
+  tags:
+    - container

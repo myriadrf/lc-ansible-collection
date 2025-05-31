@@ -1,0 +1,41 @@
+logger:
+  file:
+    path: /var/log/open5gs/upf.log
+    level: {{ epc_upf_logging_level | default(epc_logging_level) }}
+
+global:
+  max:
+    ue: {{ epc_max_ue }}
+
+upf:
+    pfcp:
+      server:
+        - address: {{ epc_upf_bind_addr }}
+      client:
+        smf:
+          - address: {{ epc_upf_pfcp_client_smf_addr | default(epc_smf_bind_addr) }}
+    gtpu:
+      server:
+        - address: {{ epc_upf_bind_addr }}
+          advertise: {{ epc_upf_advertise_addr | default(epc_upf_bind_addr) }}
+    session:
+      - subnet: {{ epc_pdn_internet_ipv4_subnet }}
+        gateway: {{ epc_pdn_internet_ipv4_gateway }}
+        dnn: internet
+        dev: ogstun
+      - subnet: {{ epc_pdn_internet_ipv6_subnet }}
+        gateway: {{ epc_pdn_internet_ipv6_gateway }}
+        dnn: internet
+        dev: ogstun
+      - subnet: {{ epc_pdn_ims_ipv4_subnet }}
+        gateway: {{ epc_pdn_ims_ipv4_gateway }}
+        dnn: ims
+        dev: ogstun2
+      - subnet: {{ epc_pdn_ims_ipv6_subnet }}
+        gateway: {{ epc_pdn_ims_ipv6_gateway }}
+        dnn: ims
+        dev: ogstun2
+    metrics:
+      server:
+        - address: {{ epc_upf_metrics_server_bind_addr | default(epc_upf_bind_addr) }}
+          port: {{ epc_upf_metrics_server_bind_port }}

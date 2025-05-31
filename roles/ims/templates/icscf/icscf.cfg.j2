@@ -1,0 +1,18 @@
+listen=udp:{{ ims_icscf_bind_addr }}:4060
+listen=tcp:{{ ims_icscf_bind_addr }}:4060
+
+alias=ims.mnc{{ ims_mnc_3 }}.mcc{{ ims_mcc }}.3gppnetwork.org
+
+#!define NETWORKNAME "ims.mnc{{ ims_mnc_3 }}.mcc{{ ims_mcc }}.3gppnetwork.org"
+#!define EPC_REALM "epc.mnc{{ ims_mnc_3 }}.mcc{{ ims_mcc }}.3gppnetwork.org"
+#!define HOSTNAME "icscf.ims.mnc{{ ims_mnc_3 }}.mcc{{ ims_mcc }}.3gppnetwork.org"
+#!subst "/NETWORKNAME/ims.mnc{{ ims_mnc_3 }}.mcc{{ ims_mcc }}.3gppnetwork.org/"
+#!define ENUM_SUFFIX "ims.mnc{{ ims_mnc_3 }}.mcc{{ ims_mcc }}.3gppnetwork.org."
+#!define DB_URL "mysql://{{ ims_icscf_mysql_username }}:{{ ims_icscf_mysql_password }}@{{ ims_mysql_addr }}/{{ ims_icscf_mysql_db_name }}"
+
+#!define WITH_TCP
+#!define WITH_XMLRPC
+
+{% if ims_icscf_debug is defined and ims_icscf_debug | bool %}
+#!define WITH_DEBUG
+{% endif %}

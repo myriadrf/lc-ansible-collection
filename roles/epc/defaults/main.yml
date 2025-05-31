@@ -1,0 +1,53 @@
+---
+# Get/set common configuration and other element endpoints
+epc_open5gs_version: 2.7.2
+epc_open5gs_config_dir: /etc/lc/open5gs
+epc_open5gs_tls_dir: /etc/lc/open5gs/tls
+epc_freediameter_config_dir: /etc/lc/freeDiameter
+epc_logging_level: 'info'
+epc_mcc: '{{ lc_mcc | default("001") }}'
+epc_mnc: '{{ lc_mnc | default("01") }}'
+epc_network_name_full: '{{ lc_network_name_full | default("LibreCellular") }}'
+epc_network_name_short: '{{ lc_network_name_short | default("LibreCellular") }}'
+epc_max_ue: 1024
+epc_hss_addr: '{{ hss_diameter_bind_addr | default("172.24.0.13") }}'
+epc_pdn_internet_ipv4_subnet: '{{ lc_pdn_internet_ipv4_subnet | default("192.168.100.0/24") }}'
+epc_pdn_internet_ipv4_gateway: '{{ lc_pdn_internet_ipv4_gateway | default("192.168.100.1" ) }}'
+epc_pdn_internet_ipv6_subnet: '{{ lc_pdn_internet_ipv6_subnet | default("2001:230:cafe::/48") }}'
+epc_pdn_internet_ipv6_gateway: '{{ lc_pdn_internet_ipv6_gateway | default("2001:230:cafe::1" ) }}'
+epc_pdn_ims_ipv4_subnet: '{{ lc_pdn_ims_ipv4_subnet | default("192.168.101.0/24") }}'
+epc_pdn_ims_ipv4_gateway: '{{ lc_pdn_ims_ipv4_gateway | default("192.168.101.1" ) }}'
+epc_pdn_ims_ipv6_subnet: '{{ lc_pdn_ims_ipv6_subnet | default("2001:230:babe::/48") }}'
+epc_pdn_ims_ipv6_gateway: '{{ lc_pdn_ims_ipv6_gateway | default("2001:230:babe::1" ) }}'
+epc_pdn_dns_forwarder_ipv4_primary: '{{ lc_dns_forwarder_ipv4_primary | default("8.8.8.8") }}'
+epc_pdn_dns_forwarder_ipv4_secondary: '{{ lc_dns_forwarder_ipv4_secondary | default("8.8.4.4") }}'
+epc_pdn_dns_forwarder_ipv6_primary: '{{ lc_dns_forwarder_ipv6_primary | default("2001:4860:4860::8888") }}'
+epc_pdn_dns_forwarder_ipv6_secondary: '{{ lc_dns_forwarder_ipv6_secondary | default("2001:4860:4860::8844") }}'
+epc_smf_pcscf_addr: '{{ ims_pcscf_bind_addr | default("172.24.0.53") }}'
+
+# SMF configuration
+epc_smf_bind_addr: 172.24.0.21
+epc_smf_no_ipv4v6_local_addr_in_packet_filter: true
+epc_smf_mtu: 1450
+epc_smf_metrics_server_bind_port: 9091
+
+# UPF configuration
+epc_upf_bind_addr: 172.24.0.22
+epc_upf_metrics_server_bind_port: 9091
+
+# SGW-C configuration
+epc_sgwc_bind_addr: 172.24.0.19
+
+# SGW-U configuration
+epc_sgwu_bind_addr: 172.24.0.20
+
+# MME configuration
+epc_mme_bind_addr: 172.24.0.23
+epc_mme_gummei_gid: 2
+epc_mme_gummei_code: 1
+epc_mme_tai_tac: 1
+epc_mme_integrity_integrity_order: 'EIA2, EIA1, EIA0'
+epc_mme_integrity_ciphering_order: 'EEA0, EEA1, EEA2'
+epc_mme_name: open5gs-mme0
+epc_mme_metrics_server_bind_port: 9091
+epc_mme_time_t3412_value: 540

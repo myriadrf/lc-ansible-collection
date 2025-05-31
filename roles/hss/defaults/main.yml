@@ -1,0 +1,79 @@
+---
+# Get common configuration and other element endpoints
+hss_mcc: '{{ lc_mcc | default("001") }}'
+hss_mnc: '{{ lc_mnc | default("01") }}'
+hss_mme_addr: '{{ epc_mme_bind_addr | default("172.24.0.23") }}'
+hss_pcscf_addr: '{{ ims_pcscf_bind_addr | default("172.24.0.53") }}'
+hss_icscf_addr: '{{ ims_icscf_bind_addr | default("172.24.0.51") }}'
+hss_scscf_addr: '{{ ims_scscf_bind_addr | default("172.24.0.52") }}'
+hss_smsc_addr: '{{ ims_smsc_bind_addr | default("172.24.0.54") }}'
+hss_dns_forwarder_addr: '{{ lc_dns_forwarder_ipv4_primary | default("8.8.8.8") }}'
+
+# DNS configuration
+hss_dns_bind_version: 9.18-22.04_beta
+hss_dns_config_dir: /etc/lc/bind
+hss_dns_bind_addr: 172.24.0.10
+
+# MySQL configuration
+hss_mysql_version: 9
+hss_mysql_max_connections: 250
+hss_mysql_bind_addr: 172.24.0.11
+hss_mysql_db_username: pyhss 
+hss_mysql_db_name: hss
+hss_mysql_root_host: '{{ docker.private_net.gateway | default("172.24.0.254") }}'
+hss_mysql_docker_volume: lc-mysql
+
+# Redis configuration
+hss_redis_version: 7
+hss_redis_bind_addr: 172.24.0.12
+hss_redis_bind_port: 6379
+
+# PyHSS configuration
+hss_version: 1.0.2
+hss_config_dir: /etc/lc/pyhss
+hss_transport: 'TCP'
+hss_diameter_bind_addr: 172.24.0.13
+hss_diameter_bind_port: 3868
+hss_hss_bind_addr: 172.24.0.14
+hss_api_bind_addr: 172.24.0.15
+hss_api_bind_port: 8080
+hss_origin_host: hss.epc.mnc{{ hss_mnc_3 }}.mcc{{ hss_mcc }}.3gppnetwork.org
+hss_origin_realm: epc.mnc{{ hss_mnc_3 }}.mcc{{ hss_mcc }}.3gppnetwork.org
+hss_product_name: pyHSS
+hss_site_name: LibreCellular
+hss_slh_enabled: False
+hss_test_sub_imsi: '001021234567890'
+hss_client_socket_timeout: 300
+hss_diameter_request_timeout: 3
+hss_active_diameter_peers_timeout: 10
+hss_lock_provisioning: True
+hss_cancel_location_request_enabled: False
+hss_insert_subscriber_data_force: False
+hss_default_ifc: 'default_ifc.xml'
+hss_default_sh_userdata: 'default_sh_user_data.xml'
+hss_default_scscf_pool: 'sip:scscf.ims.mnc{{ hss_mnc_3 }}.mcc{{ hss_mcc }}.3gppnetwork.org:6060'
+hss_roaming_outbound_allow_undefined_networks: True
+hss_sctp_rto_max: 5000
+hss_sctp_rto_min: 500
+hss_sctp_rto_initial: 1000
+hss_api_page_size: 200
+hss_api_enable_insecure_auc: True 
+hss_benchmarking_enabled: True 
+hss_benchmarking_reporting_interval: 3600
+hss_eir_imsi_imei_logging: True 
+hss_eir_no_match_response: 2
+hss_logging_level: 'INFO'
+hss_hss_logging_file: /pyhss/log/pyhss_hss.log
+hss_diameter_logging_file: /pyhss/log/pyhss_diameter.log
+hss_geored_logging_file: /pyhss/log/pyhss_geored.log
+hss_metric_logging_file: /pyhss/log/pyhss_metrics.log
+hss_sqlalchemy_sql_echo: True
+hss_sqlalchemy_pool_recycle: 15
+hss_sqlalchemy_pool_size: 30
+hss_sqlalchemy_max_overflow: 0
+hss_redis_connection_type: tcp
+hss_prometheus_enabled: False 
+hss_prometheus_bind_port: 8081
+hss_prometheus_async_subscriber_count: False 
+hss_snmp_bind_port: 1161
+hss_snmp_bind_addr: 172.24.0.13

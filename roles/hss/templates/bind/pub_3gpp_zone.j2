@@ -1,0 +1,13 @@
+$ORIGIN mnc{{ hss_mnc_3 }}.mcc{{ hss_mcc }}.pub.3gppnetwork.org.
+$TTL 1W
+@                       1D IN SOA       localhost. root.localhost. (
+                                        1		; serial
+                                        3H              ; refresh
+                                        15M             ; retry
+                                        1W              ; expiry
+                                        1D )            ; minimum
+
+                        1D IN NS        pubns
+pubns                   1D IN A         {{ hss_dns_bind_addr }}
+
+aes                     1D IN A         172.22.0.30

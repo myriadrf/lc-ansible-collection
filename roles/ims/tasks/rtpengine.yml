@@ -1,0 +1,39 @@
+- name: Ensure Rtpengine configuration directory exists
+  ansible.builtin.file:
+    path: '{{ ims_rtpengine_config_dir }}'
+    state: directory
+    mode: '0755'
+  tags: 
+    - config
+- name: Install generated Rtpengine configuration
+  ansible.builtin.template:
+    src: 'rtpengine/rtpengine.conf.j2'
+    dest: '{{ ims_rtpengine_config_dir }}/rtpengine.conf'
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - config
+- name: Create rtpengine container
+  community.docker.docker_container:
+    name: lc-rtpengine
+    image: myriadrf/rtpengine:{{ ims_rtpengine_version }}
+    pull: yes
+    state: started
+    restart: yes
+    restart_policy: always
+    privileged: true
+    capabilities: 
+      - NET_ADMIN
+    networks:
+      - name: lc
+        ipv4_address: '{{ ims_rtpengine_bind_addr }}'
+    expose:
+      - '2223/udp'
+      - '49000-50000/udp'
+    volumes:
+      - /etc/lc/rtpengine:/etc/lc/rtpengine:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+  tags:
+    - container
