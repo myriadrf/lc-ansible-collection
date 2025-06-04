@@ -1,8 +1,4 @@
 ---
-- ansible.builtin.include_role:
-    name: geerlingguy.docker
-  tags:
-    - docker
 - name: Install pip packages 
   ansible.builtin.pip:
     name: '{{ item.name }}'

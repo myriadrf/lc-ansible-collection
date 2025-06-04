@@ -4,7 +4,7 @@ name: librecellular
 version: 0.1.0
 readme: README.md
 authors:
-  - AB Open Ltd
+  - Andrew Back <andrew@abopen.com>
 description: Collection of LibreCellular stack automation tools for Ansible.
 license:
   - Apache-2.0
@@ -18,9 +18,8 @@ tags:
 dependencies:
   community.docker: ">=4.0.0"
   community.mysql: ">=3.10.0"
-  geerlinguy.docker: ">=7.4.0"
-repository: https://github.com/myriadrf/lc-ansible
-documentation: https://librecellular.org/user/software
+repository: https://github.com/myriadrf/lc-ansible-collection
+documentation: https://librecellular.org/user/software/standard#ansible
 homepage: https://librecellular.com
-issues: https://github.com/myriadrf/lc-ansible/issues
+issues: https://github.com/myriadrf/lc-ansible-collection/issues
 build_ignore: []
